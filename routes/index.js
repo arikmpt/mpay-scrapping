@@ -270,4 +270,65 @@ router.post('/robot', async function(req, res, next) {
   }
 });
 
+router.get('/auto-approve', async function(req, res, next) {
+  const robots = await db.Robot.findAll();
+
+  robots.map(async (robot) => {
+    const transactions = await db.Transaction.findAll({
+      where: {
+        fundMethod: {
+          [Op.like]: `%${robot.bankName}%`
+        },
+        credit: robot.amount,
+        status: "In Progess"
+      }
+    });
+
+    const filteredData = fuzzySearchWithThreshold(transactions, robot.accountName, 88);
+    if (filteredData.length > 0) {
+      const transaction = await db.Transaction.findOne({
+        where: {
+          transactionId: filteredData[0].transactionId
+        }
+      });
+
+      const approveHeaders = {
+        'accept': '*/*',
+        'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+        'x-requested-with': 'XMLHttpRequest',
+        'Cookie': process.env.WEB_COOKIE
+      };
+
+      try {
+        const response = await axios.get(`https://1b.3m3-admin.com/transactions/instant_transaction/confirm/${transaction.transactionId}?view_redirect=deposit`, { headers: approveHeaders });
+        if(response.data.s === 'error') {
+          await db.Transaction.update(
+            { status: 'Error' },
+            {
+              where: {
+                transactionId: transaction.transactionId,
+              },
+            },
+          );
+        } else {
+          await db.Transaction.destroy(
+            {
+              where: {
+                transactionId: transaction.transactionId,
+              },
+            },
+          );
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  })
+
+  return res.json({
+    message: "complete"
+  })
+})
+
 module.exports = router;
