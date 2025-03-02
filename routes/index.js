@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express = require('express');
 var router = express.Router();
 
@@ -113,10 +114,8 @@ router.post('/cookie', async function(req, res, next) {
 router.post('/scrape', async function(req, res, next) {
   const url = 'https://1b.3m3-admin.com/transactions/new_instant_transaction/ajax';
 
-  const cookie = await db.Cookie.findByPk(1);
-
   const params = {
-    _token: cookie.token,
+    _token: process.env.WEB_TOKEN,
     view_name: 'deposit_only',
     record_type: 1,
     'bank_id[]': [
@@ -135,7 +134,7 @@ router.post('/scrape', async function(req, res, next) {
     'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
     'x-requested-with': 'XMLHttpRequest',
-    'Cookie': cookie.cookie
+    'Cookie': process.env.WEB_COOKIE
   };
   axios.get(url, { params, headers })
   .then(async response => {
@@ -154,6 +153,40 @@ router.post('/scrape', async function(req, res, next) {
 
 router.post('/robot', async function(req, res, next) {
   try {
+
+    if(req.body.account_name === "" || !req.body.account_name || !req.body.bank_name || req.body.bank_name === "" || req.body.amount || !req.body.amoun) {
+      return res.json({
+        message: "invalid data"
+      })
+    }
+
+    const url = 'https://1b.3m3-admin.com/transactions/new_instant_transaction/ajax';
+
+    const params = {
+      _token: process.env.WEB_TOKEN,
+      view_name: 'deposit_only',
+      record_type: 1,
+      'bank_id[]': [
+        'Bank / BANK BCA',
+        'Bank / BANK BNI',
+        'Bank / BANK MANDIRI',
+        'Bank / BANK BRI',
+        'E-wallet / DANA'
+      ],
+      search_name: '',
+      period: ''
+    };
+
+    const headers = {
+      'accept': '*/*',
+      'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+      'x-requested-with': 'XMLHttpRequest',
+      'Cookie': process.env.WEB_COOKIE
+    };
+    axios.get(url, { params, headers })
+    .then(async response => await fetchAndExtractTransactions(response.data))
+
     const transactions = await db.Transaction.findAll({
       where: {
         fundMethod: {
@@ -173,49 +206,45 @@ router.post('/robot', async function(req, res, next) {
         }
       });
 
-      const cookie = await db.Cookie.findByPk(1);
+      const approveHeaders = {
+        'accept': '*/*',
+        'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+        'x-requested-with': 'XMLHttpRequest',
+        'Cookie': process.env.WEB_COOKIE
+      };
 
-      if (cookie) {
-        const approveHeaders = {
-          'accept': '*/*',
-          'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
-          'x-requested-with': 'XMLHttpRequest',
-          'Cookie': cookie.cookie
-        };
-
-        try {
-          const response = await axios.get(`https://1b.3m3-admin.com/transactions/instant_transaction/confirm/${transaction.transactionId}?view_redirect=deposit`, { headers: approveHeaders });
-          if(response.data.s === 'error') {
-            await db.Transaction.update(
-              { status: 'Error' },
-              {
-                where: {
-                  transactionId: transaction.transactionId,
-                },
+      try {
+        const response = await axios.get(`https://1b.3m3-admin.com/transactions/instant_transaction/confirm/${transaction.transactionId}?view_redirect=deposit`, { headers: approveHeaders });
+        if(response.data.s === 'error') {
+          await db.Transaction.update(
+            { status: 'Error' },
+            {
+              where: {
+                transactionId: transaction.transactionId,
               },
-            );
-            return res.json({
-              message: response.data.s
-            })
-          } else {
-            await db.Transaction.update(
-              { status: 'Done' },
-              {
-                where: {
-                  transactionId: transaction.transactionId,
-                },
-              },
-            );
-            return res.json({
-              message: 'success'
-            });
-          }
-        } catch (error) {
+            },
+          );
           return res.json({
-            message: error.message
+            message: response.data.s
+          })
+        } else {
+          await db.Transaction.update(
+            { status: 'Done' },
+            {
+              where: {
+                transactionId: transaction.transactionId,
+              },
+            },
+          );
+          return res.json({
+            message: 'success'
           });
         }
+      } catch (error) {
+        return res.json({
+          message: error.message
+        });
       }
     }
 
