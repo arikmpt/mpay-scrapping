@@ -229,8 +229,7 @@ router.post('/robot', async function(req, res, next) {
             message: response.data.s
           })
         } else {
-          await db.Transaction.update(
-            { status: 'Done' },
+          await db.Transaction.destroy(
             {
               where: {
                 transactionId: transaction.transactionId,
