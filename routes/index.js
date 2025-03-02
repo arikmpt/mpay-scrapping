@@ -154,12 +154,6 @@ router.post('/scrape', async function(req, res, next) {
 router.post('/robot', async function(req, res, next) {
   try {
 
-    if(req.body.account_name === "" || !req.body.account_name || !req.body.bank_name || req.body.bank_name === "" || req.body.amount === "" || !req.body.amount) {
-      return res.json({
-        message: "invalid data"
-      })
-    }
-
     const url = 'https://1b.3m3-admin.com/transactions/new_instant_transaction/ajax';
 
     const params = {
@@ -186,6 +180,93 @@ router.post('/robot', async function(req, res, next) {
     };
     axios.get(url, { params, headers })
     .then(async response => await fetchAndExtractTransactions(response.data))
+
+    if(Array.isArray(req.body)) {
+      req.body.map(async (request) => {
+        if(request.account_name === "" || !request.account_name || !request.bank_name || request.bank_name === "" || request.amount === "" || !request.amount) {
+          return res.json({
+            message: "invalid data"
+          })
+        }
+
+        const transactions = await db.Transaction.findAll({
+          where: {
+            fundMethod: {
+              [Op.like]: `%${request.bank_name}%`
+            },
+            credit: request.amount,
+            status: "In Progess"
+          }
+        });
+
+        const filteredData = fuzzySearchWithThreshold(transactions, req.body.account_name, 88);
+
+        if (filteredData.length > 0) {
+          const transaction = await db.Transaction.findOne({
+            where: {
+              transactionId: filteredData[0].transactionId
+            }
+          });
+    
+          const approveHeaders = {
+            'accept': '*/*',
+            'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+            'x-requested-with': 'XMLHttpRequest',
+            'Cookie': process.env.WEB_COOKIE
+          };
+    
+          try {
+            const response = await axios.get(`https://1b.3m3-admin.com/transactions/instant_transaction/confirm/${transaction.transactionId}?view_redirect=deposit`, { headers: approveHeaders });
+            if(response.data.s === 'error') {
+              await db.Transaction.update(
+                { status: 'Error' },
+                {
+                  where: {
+                    transactionId: transaction.transactionId,
+                  },
+                },
+              );
+            } else {
+              await db.Transaction.destroy(
+                {
+                  where: {
+                    transactionId: transaction.transactionId,
+                  },
+                },
+              );
+            }
+          } catch (error) {
+            console.log(error)
+          }
+        }
+
+        await db.Robot.findOrCreate({
+          where: { transId: request.trans_id },
+          defaults: {
+            transId: request.trans_id,
+            transDate: request.trans_date,
+            bankName: request.bank_name,
+            accountName: request.account_name,
+            bankFrom: request.bank_from,
+            branch: request.branch,
+            amount: request.amount,
+            notes: request.notes,
+            type: request.type,
+          },
+        });
+
+      })
+      return res.json({
+        message: "success"
+      })
+    }
+
+    if(req.body.account_name === "" || !req.body.account_name || !req.body.bank_name || req.body.bank_name === "" || req.body.amount === "" || !req.body.amount) {
+      return res.json({
+        message: "invalid data"
+      })
+    }
 
     const transactions = await db.Transaction.findAll({
       where: {
