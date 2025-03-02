@@ -123,6 +123,7 @@ router.post('/scrape', async function(req, res, next) {
       'Bank / BANK BCA',
       'Bank / BANK BNI',
       'Bank / BANK MANDIRI',
+      'Bank / BANK BRI',
       'E-wallet / DANA'
     ],
     search_name: '',
@@ -207,7 +208,7 @@ router.post('/robot', async function(req, res, next) {
               },
             );
             return res.json({
-              transaction
+              message: 'success'
             });
           }
         } catch (error) {
