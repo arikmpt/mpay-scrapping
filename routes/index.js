@@ -83,21 +83,40 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/cookie', async function(req, res, next) {
-  const cookie = await db.Cookie.create({
-    cookie: req.body.cookie,
-    token: req.body.token
-  })
+  const exists = await db.Cookie.findByPk(1);
+  if(exists) {
+    const cookie = await db.Cookie.update(
+      { cookie: req.body.cookie },
+      { token: req.body.token },
+      {
+        where: {
+          id: exists.id,
+        },
+      },
+    );
+    return res.json({
+      cookie: exists
+    })
 
-  return res.json({
-    cookie
-  })
+  } else {
+    const cookie = await db.Cookie.create({
+      cookie: req.body.cookie,
+      token: req.body.token
+    })
+  
+    return res.json({
+      cookie
+    })
+  }
 })
 
-router.post('/scrape', function(req, res, next) {
+router.post('/scrape', async function(req, res, next) {
   const url = 'https://1b.3m3-admin.com/transactions/new_instant_transaction/ajax';
 
+  const cookie = await db.Cookie.findByPk(1);
+
   const params = {
-    _token: req.body.token,
+    _token: cookie.token,
     view_name: 'deposit_only',
     record_type: 1,
     'bank_id[]': [
@@ -115,7 +134,7 @@ router.post('/scrape', function(req, res, next) {
     'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
     'x-requested-with': 'XMLHttpRequest',
-    'Cookie': req.body.cookie
+    'Cookie': cookie.cookie
   };
   axios.get(url, { params, headers })
   .then(async response => {
