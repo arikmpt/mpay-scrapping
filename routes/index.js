@@ -154,7 +154,7 @@ router.post('/scrape', async function(req, res, next) {
 router.post('/robot', async function(req, res, next) {
   try {
 
-    if(req.body.account_name === "" || !req.body.account_name || !req.body.bank_name || req.body.bank_name === "" || req.body.amount || !req.body.amoun) {
+    if(req.body.account_name === "" || !req.body.account_name || !req.body.bank_name || req.body.bank_name === "" || req.body.amount === "" || !req.body.amount) {
       return res.json({
         message: "invalid data"
       })
@@ -248,7 +248,20 @@ router.post('/robot', async function(req, res, next) {
       }
     }
 
-    // If no transactions are found or cookie is missing
+    await db.Robot.findOrCreate({
+      where: { transId: req.body.trans_id },
+      defaults: {
+        transId: req.body.trans_id,
+        transDate: req.body.trans_date,
+        bankName: req.body.bank_name,
+        accountName: req.body.account_name,
+        bankFrom: req.body.bank_from,
+        branch: req.body.branch,
+        amount: req.body.amount,
+        notes: req.body.notes,
+        type: req.body.type,
+      },
+    });
     return res.json({
       message: "Not found"
     });
