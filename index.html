@@ -1,0 +1,527 @@
+<style>
+	.dataTables_wrapper>.row:nth-child(1) {
+		width: 70%;
+	}
+
+	.panel-heading {
+		position: absolute;
+		right: 1.25rem;
+		top: 1.25rem;
+	}
+
+	.table-pink td,
+	.table-pink:hover td {
+		background-color: pink;
+	}
+
+	.table-orange td,
+	.table-orange:hover td {
+		background-color: #fcac44;
+	}
+
+	.table-border-red td,
+	.table-border-red:hover td {
+		border-color: red !important;
+		background-color: #ff880010;
+	}
+</style>
+<div class="row">
+	<div class="col-12">
+		<i class="text-danger">Notice: Maximum first 300 transaction load.</i>
+	</div>
+	<div class="col-12">
+		<input type="hidden" id="payment" value="">
+		<input type="hidden" id="view_redirect" name="view_redirect" value="deposit">
+
+		<div class="card shadow">
+			<div class="card-body">
+
+				<div class="panel-heading">
+
+					<div class="text-right">
+						<span>Multiple Select: </span>
+						<button type="button" class="waves-effect waves-light btn btn-success btn-sm btn-rounded" id="multi-confirm">Confirm</button>
+						<button type="button" class="waves-effect waves-light btn btn-danger btn-sm btn-rounded" id="multi-reject">Reject</button>
+					</div>
+				</div>
+				<div class="">
+					<table class="table table-bordered table-hover toggle-circle instant">
+						<thead>
+							<tr>
+								<th class="text-center">No.</th>
+								<th class="text-center">Transaction Date</th>
+								<th class="text-center">Transaction ID</th>
+								<th class="text-center">Account Name</th>
+								<th class="text-center">Username</th>
+
+								<th class="text-center" style="width: 50px">Ref No</th>
+								<th class="text-center">Fund Method</th>
+								<th class="text-center">Bank Details</th>
+
+								<th class="text-center">Status</th>
+								<th class="text-center">Receipt</th>
+								<th class="text-center td_debit">Debit</th>
+								<th class="text-center td_credit">Credit</th>
+								<th></th>
+								<th></th>
+								<th><input type="checkbox" id="check-all" name="checkall" value="1"></th>
+							</tr>
+						</thead>
+						<!-- starts loop of the transaction-->
+						<tbody>
+
+
+							<tr>
+								<td class="text-center">1</td>
+								<td class="text-center"> 2025-03-01 16:26:07
+									<div class="text-center" style="max-width: 120px; margin:auto;">
+										<a class="text-break" href="javascript:void(0)"
+											onclick="window.open(`https://1b.3m3-admin.com/transactions/transaction_ipaddress/114.5.251.170`, `Player ip checking table`, `width=1600,height=600`);">
+											114.5.251.170
+										</a>
+									</div>
+
+									<span class="badge badge-info">Game Wallet</span>
+								</td>
+								<td class="text-center">
+									<a href="https://1b.3m3-admin.com/transactions/depositform/CWOSY067c2d2af5ca4b"
+										target="_blank"><span  id="id_CWOSY067c2d2af5ca4b" >CWOSY067c2d2af5ca4b</span></a>
+									<br>
+									<i onclick="Copytext('id_CWOSY067c2d2af5ca4b')" class="far fa-copy pointer" aria-hidden="true"></i>
+
+								</td>
+
+								<td class="text-center">
+									kisno / DANA
+									<div class="text-primary">
+										089508944083
+									</div>
+
+								</td>
+								<td class="text-center">
+									<div class="level-icon regular"></div>
+									<a href="https://1b.3m3-admin.com/member_details/2M3TNACCWOSY" target="_blank">
+										<span id="trans_CWOSY067c2d2af5ca4b">kis888</span>
+									</a>
+									<br>
+									<i onclick="Copytext('trans_CWOSY067c2d2af5ca4b')" class="far fa-copy pointer" aria-hidden="true"></i>
+								</td>
+
+
+								<td class="text-center">
+									Kis888
+								</td>
+								<td class="text-center">
+									E-wallet / DANA
+								</td>
+								<td class="text-center">
+
+									<div>
+
+										DANA / ERWAN SYAHPUTRA
+									</div>
+									<div class="text-primary">
+										085930370943
+									</div>
+
+
+								</td>
+								<td class="text-center"><span
+            class="label label-warning">In Progess</span>
+
+									<div class="text-danger">
+										<i></i>
+
+									</div>
+								</td>
+								<td class="no-padding text-center">
+									<a href="javascript:void(0)"
+										class="waves-effect waves-light btn btn-danger btn-sm btn-block btn-rounded"> <i
+              class="fas fa-times"></i></a>
+								</td>
+
+								<td align="right" class="amount_font text-center td_debit">
+									<span id="withd_CWOSY067c2d2af5ca4b" style="display: none;">0</span>
+
+									<div class="">
+										0.00
+									</div>
+								</td>
+								<td align="right" class="amount_font td_credit">
+									<div>
+										<div class="">
+											30,000.00
+										</div>
+									</div>
+								</td>
+
+
+
+								<td class="no-padding">
+									<a href="https://1b.3m3-admin.com/transactions/instant_transaction/confirm/CWOSY067c2d2af5ca4b"
+										data-msg="Are you sure you want to confirm this deposit?" value="Confirm"
+										class="waves-effect waves-light btn btn-success btn-sm btn-block btn-rounded"
+										style="font-weight:500;"> Confirm </a>
+								</td>
+								<td class="no-padding">
+									<a href="javascript:void(0)" data-toggle="modal" data-target="#reject"
+										class="waves-effect waves-light btn btn-danger btn-sm btn-block btn-rounded"
+										style="font-weight:500;"
+										onclick="showModal('https://1b.3m3-admin.com/transactions/instant_transaction/reject/CWOSY067c2d2af5ca4b?view_redirect='+$('#view_redirect').val(), '.modal-lg', '#reject')">Reject</a>
+
+								</td>
+
+
+								<td><input type="checkbox" class="multi_check" name="multi[]" value="CWOSY067c2d2af5ca4b"></td>
+
+							</tr>
+						</tbody>
+					</table>
+					<audio id="chatAudio">
+						<source src="https://1b.3m3-admin.com/assets/notify/notify.wav" type="audio/wav">
+					</audio>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal modal-special" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+		</div>
+	</div>
+</div>
+
+
+
+
+<script type="text/javascript">
+	function showModal(url, id='', classes=''){
+      if (url.includes("(Silahkan Hubungi CS)")) {
+        swal({
+          title: "Sorry!",
+          text: "Please update the bank account.no before transaction.",
+          icon: "error",
+          allowOutsideClick: false,
+          closeOnClickOutside: false,
+          button: "Okay",
+        })
+      }else{
+        if (id=='#high_transinfo') {
+            $('.modal-special .modal-dialog').addClass(id.replace('#',''));
+            $('.modal-special .modal-dialog').addClass(classes.replace('.',''));
+            $('.modal-special .modal-content').load(url);
+            $('.modal.modal-special').modal('show');
+        } else {
+            $('.modal-dialog').addClass(id.replace('#',''));
+            $('.modal-dialog').addClass(classes.replace('.',''));
+            $('.modal-content').load(url);
+            $('.modal').modal('show');
+        }
+
+      }
+
+    }
+    function hideModal() {
+        $('.modal.modal-special').modal('hide');
+    }
+
+
+    $('.modal.modal-special').on('hidden.bs.modal', function() {
+        $('.modal-special .modal-content').html('');
+        window.pause = false;
+
+    })
+</script>
+<style>
+	a[disabled="disabled"] {
+		pointer-events: none;
+	}
+</style>
+<script>
+	$(document).ready(function() {
+
+        afterdata = $('#searchtransaction').serialize();
+        $('#check-all').on('click',function() {
+            // $('.multi_check').click();
+            $('.multi_check').prop('checked',$(this).is(':checked')).trigger('change');
+
+        });
+        $('.multi_check').on('change',function() {
+            if($(this).is(':checked')) {
+                $(this).parents('tr').addClass('table-info');
+            } else {
+                $(this).parents('tr').removeClass('table-info');
+
+            }
+        });
+        $('#multi-confirm').on('click', function() {
+            var token = { _token: $('meta[name="csrf-token"]').attr('content') };
+            var input = $('input[name="multi[]"]').filter(':checked').serialize();
+            var data = $.param(token) + (input?('&'+input):'');
+            var thise=$(this);
+            if(!input) {
+                toastMessage('warning','No Selected Transaction! Please select one.', '#ff6849', 'warning');
+
+                return false;
+
+            }
+            if ($(this).attr('disabled')) {
+                    return false
+                } else {
+                    $(this).attr('disabled', true)
+                    if (!confirm('Multiple Select to confirm! Are you sure to confirm multiple?')) {
+                        $(this).attr('disabled', false)
+                        return false;
+                    }
+                }
+            $.post("https://1b.3m3-admin.com/transactions/instant_transaction/multi_confirm",data,function(d) {
+                thise.attr('disabled', false)
+                toastMessage(d.s, d.m, '#ff6849', d.s);
+                $('#load_tweets').load(url+'?'+afterdata).fadeIn("slow");
+
+            })
+        })
+
+        $('#multi-reject').on('click', function() {
+
+            var token = { _token: $('meta[name="csrf-token"]').attr('content') };
+            var input = $('input[name="multi[]"]').filter(':checked').serialize();
+            var data = $.param(token) + (input?('&'+input):'');
+            var thise=$(this);
+
+            if(!input) {
+                toastMessage('warning','No Selected Transaction! Please select one.', '#ff6849', 'warning');
+
+                return false;
+
+            }
+            window.pause = true;
+            // clearInterval(window.interload);
+            showModal("https://1b.3m3-admin.com/transactions/instant_transaction/multi_reject_form?"+data,'#multi_reject')
+
+            // if ($(this).attr('disabled')) {
+            //     return false
+            // } else {
+            //     $(this).attr('disabled', true)
+            //     if (!confirm('Multiple Select Deposit to confirm! Are you sure to confirm multiple?')) {
+            //         $(this).attr('disabled', false)
+            //         return false;
+            //     }
+
+            // }
+            // $.post('/instanttransaction/multi_confirm',data,function(res) {
+            //     thise.attr('disabled', false)
+            //     console.log('res',res)
+            // })
+        })
+    });
+
+</script>
+<script>
+	function clickConfirm(e) {
+        e.preventDefault();
+            // console.log('check',$(this).attr('href'))
+        if ($(this).data('type') && $(this).data('payment') && $(this).data('payment') !='' && $(this).data('payment') !='coin2pay' && $('#payment').val() !=''  && !$('#quick_withdraw').is(':checked') && ($(this).data('status') && $(this).data('status')==1)) {
+            let data = {
+                url: $(this).attr('href'),
+                gateway: $('#payment').val(),
+                view_redirect: $('input[name="view_redirect"]').val()
+            }
+            post = $.param(data);
+            showModal('https://1b.3m3-admin.com/transactions/payment_choose?' + post, '#w_payment')
+        } else {
+            if($(this).attr('disabled')) {
+            return false
+            } else {
+            $(this).attr('disabled',true)
+                if($(this).data('msg')){
+                if(!confirm($(this).data('msg'))) {
+                    $(this).attr('disabled',false)
+                    return false;
+                }
+            }
+
+            }
+
+            urlw = $(this).attr('href')+'?view_redirect='+$('input[name="view_redirect"]').val()+ ($(this).data('payment') =='coin2pay'?('&payment='+$(this).data('payment') ):'')
+            $.get(urlw, function(d, status){
+                window.processed = (($('#__instant').html()==''?0:$('#__instant').html()) -1);
+                console.log('d',d);
+                if(d.link != undefined) {
+                    return window.location.href = d.link;
+                }
+                toastMessage( d.s ,  d.m , '#ff6849', d.s );
+                // $('#load_tweets').load(url+'?'+afterdata).fadeIn("slow");
+                noinclude = [5];
+                // if(d.s=='success'&&d.t!=undefined && d.p!=undefined) {
+                    // if(!noinclude.includes(d.p)) {
+                    //     trans = d.t.split(',');
+                    //     console.log(trans);
+                    //     trans.forEach(element => {
+                    //     $('#id_'+element).parents('tr').addClass('d-none');
+                    //     $('#id_'+element).parents('tr').remove();
+
+                    //     });
+                    // } else {
+                        if(window.trans_ajax) {
+                        } else {
+                            window.trans_ajax = $.ajax({
+                                url: url + '?' + afterdata,
+                                success: function(d) {
+                                    $('#load_tweets').html(d);
+                                    window.reload_trans = setTimeout(() => {
+                                        // if(!window.pause) {
+                                        reloadtransaction();
+                                        // }
+                                    }, 30000);
+                                    window.trans_ajax =undefined;
+                                }
+                            });
+                        }
+                    // }
+
+                // }
+
+                hideModal();
+
+            });
+        }
+            // return window.location.href = $(this).attr('href');
+    }
+
+    $(document).ready(function() {
+        let afterdata =$('#searchtransaction').serialize();
+        let url = "https://1b.3m3-admin.com/transactions/new_instant_transaction/ajax" ;
+        voption = window.options.map(function(item) {
+            return parseInt(item);
+        })
+        d_table =$('.instant').DataTable({
+            // "paging": false,
+            "pageLength": 150,
+            "scrollX": true,
+            "scroller": true,
+            "bDestroy": true,
+            "search": {
+                "search": search_value
+            },
+                        "columnDefs": [
+                    { "targets": voption, visible: true },
+                    { "targets": '_all', visible: false },
+                    { "targets": 14, orderable: false }
+                    ],
+                            });
+        d_table.on('draw', function() {
+            $('a[value="Confirm"]').off('click', clickConfirm)
+            $('a[value="Confirm"]').on('click', clickConfirm)
+        });
+
+        $('a[value="Confirm"]').off('click', clickConfirm)
+        $('a[value="Confirm"]').on('click', clickConfirm)
+        // $('a[value="Confirm"]').on('click', function(e) {
+        //     e.preventDefault();
+        //     // console.log('check',$(this).attr('href'))
+
+        //     if($(this).attr('disabled')) {
+        //     return false
+        //     } else {
+        //     $(this).attr('disabled',true)
+        //         if($(this).data('msg')){
+        //         if(!confirm($(this).data('msg'))) {
+        //             $(this).attr('disabled',false)
+        //             return false;
+        //         }
+        //     }
+
+        //     }
+
+        //     $.get($(this).attr('href'), function(d, status){
+        //     console.log('d',d);
+        //     if(d.link != undefined) {
+        //         return window.location.href = d.link;
+        //     }
+        //     toastMessage( d.s ,  d.m , '#ff6849', d.s );
+        //     $('#load_tweets').load(url+'?'+afterdata).fadeIn("slow");
+
+        //     // $('#load_tweets').load('/new_instanttransaction/ajax').fadeIn("slow");
+        //     });
+
+        //     // return window.location.href = $(this).attr('href');
+
+        // })
+
+        preset_filter();
+
+        function preset_filter(){
+
+          // check current local storage
+          var objectArray = [];
+          var retrievedObject = localStorage.getItem('instant_filter');
+          if (retrievedObject == null) {
+            localStorage.setItem('instant_filter', "");
+            retrievedObject = localStorage.getItem('instant_filter');
+          }
+          objectArray = retrievedObject.split(",");
+          objectArray.forEach(preset_filter_function)
+
+        }
+
+        function preset_filter_function(item, index, arr){
+
+
+          if (item != "") {
+
+
+
+            if (window.options.includes(item)) {
+               oindex = window.options.indexOf(item);
+              window.options.splice( oindex, 1 );
+            }
+
+
+            $('.custom-tabled').find('li > .'+item+' > input').prop( 'checked', false )
+
+            column = d_table.column( item );
+
+
+            // Toggle the visibility
+            column.visible(false);
+
+
+
+          }
+
+        }
+    });
+
+
+    function Copytext(e) {
+
+        const el = document.createElement('textarea');
+        el.value = document.getElementById(e).innerHTML;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+
+
+        /* Get the text field */
+        var copyText = document.getElementById(e).innerHTML;
+
+
+        swal("Copied the text: " + el.value);
+    }
+</script>
+
+<script>
+	$('#chatAudio')[0].play();
+</script>
+
+<script>
+	$('.td_debit').hide();
+        $('.td_credit').show();
+    
+</script>
