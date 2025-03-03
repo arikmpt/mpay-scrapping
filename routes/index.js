@@ -199,7 +199,7 @@ router.post('/robot', async function(req, res, next) {
           }
         });
 
-        const filteredData = fuzzySearchWithThreshold(transactions, req.body.account_name, 88);
+        const filteredData = fuzzySearchWithThreshold(transactions, request.account_name, 88);
 
         if (filteredData.length > 0) {
           const transaction = await db.Transaction.findOne({
