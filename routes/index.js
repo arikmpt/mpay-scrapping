@@ -7,6 +7,7 @@ const { JSDOM } = require("jsdom");
 const db = require('../models');
 const { Op } = require('sequelize');
 const fuzzy = require('fuzzy');
+const { createObjectCsvWriter } = require('csv-writer');
 
 async function fetchAndExtractTransactions(htmlString) {
   try {
@@ -228,7 +229,8 @@ router.post('/robot', async function(req, res, next) {
                 },
               );
             } else {
-              await db.Transaction.destroy(
+              await db.Transaction.update(
+                { status: 'Done' },
                 {
                   where: {
                     transactionId: transaction.transactionId,
@@ -310,7 +312,8 @@ router.post('/robot', async function(req, res, next) {
             message: response.data.s
           })
         } else {
-          await db.Transaction.destroy(
+          await db.Transaction.update(
+            { status: 'Done' },
             {
               where: {
                 transactionId: transaction.transactionId,
@@ -393,7 +396,8 @@ router.get('/auto-approve', async function(req, res, next) {
             },
           );
         } else {
-          await db.Transaction.destroy(
+          await db.Transaction.update(
+            { status: 'Done' },
             {
               where: {
                 transactionId: transaction.transactionId,
@@ -410,6 +414,43 @@ router.get('/auto-approve', async function(req, res, next) {
   return res.json({
     message: "complete"
   })
+})
+
+router.get('/report', async (req, res, next) => {
+  const transactions = await db.Transaction.findAll({
+    where: {
+      status: 'Done'
+    }
+  });
+
+  const fileName = new Date();
+
+  const csvWriter = createObjectCsvWriter({
+      path: `${__dirname}/../public/${fileName.getFullYear()}${fileName.getMonth()}${fileName.getDate()}.csv`,
+      header: [
+          {id: 'transactionId', title: 'Transaction Id'},
+          {id: 'transactionDate', title: 'Transaction Date'},
+          {id: 'accountName', title: 'Account Name'},
+          {id: 'accountNumber', title: 'Account Number'},
+          {id: 'username', title: 'Username'},
+          {id: 'refNo', title: 'Ref No'},
+          {id: 'fundMethod', title: 'Fund Method'},
+          {id: 'credit', title: 'Credit'},
+          {id: 'status', title: 'Status'},
+      ]
+  });
+
+  try {
+    await csvWriter.writeRecords(transactions);
+    
+    return res.json({
+      file: `${process.env.APP_URL}${fileName.getFullYear()}${fileName.getMonth()}${fileName.getDate()}.csv`
+    })
+  } catch (error) {
+    return res.json({
+      message: "Error"
+    })
+  }
 })
 
 module.exports = router;
