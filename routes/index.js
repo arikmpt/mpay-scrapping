@@ -184,12 +184,6 @@ router.post('/robot', async function(req, res, next) {
 
     if(Array.isArray(req.body.values)) {
       req.body.values.map(async (request) => {
-        if(request.account_name === "" || !request.account_name || !request.bank_name || request.bank_name === "" || request.amount === "" || !request.amount) {
-          return res.json({
-            message: "invalid data"
-          })
-        }
-
         const transactions = await db.Transaction.findAll({
           where: {
             fundMethod: {
@@ -261,12 +255,6 @@ router.post('/robot', async function(req, res, next) {
       })
       return res.json({
         message: "success"
-      })
-    }
-
-    if(req.body.account_name === "" || !req.body.account_name || !req.body.bank_name || req.body.bank_name === "" || req.body.amount === "" || !req.body.amount) {
-      return res.json({
-        message: "invalid data"
       })
     }
 
