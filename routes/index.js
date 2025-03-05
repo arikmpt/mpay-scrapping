@@ -182,8 +182,8 @@ router.post('/robot', async function(req, res, next) {
     axios.get(url, { params, headers })
     .then(async response => await fetchAndExtractTransactions(response.data))
 
-    if(Array.isArray(req.body)) {
-      req.body.map(async (request) => {
+    if(Array.isArray(req.body.values)) {
+      req.body.values.map(async (request) => {
         if(request.account_name === "" || !request.account_name || !request.bank_name || request.bank_name === "" || request.amount === "" || !request.amount) {
           return res.json({
             message: "invalid data"
